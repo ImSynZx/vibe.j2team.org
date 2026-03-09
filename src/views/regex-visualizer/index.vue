@@ -180,12 +180,12 @@ const explainRegex = (str: string) => {
         t: 'dấu tab',
         r: 'carriage return',
       }
-      if (/[1-9]/.test(nextChar || '')) {
+      if (nextChar && /[1-9]/.test(nextChar)) {
         tokens.push({
           raw: '\\' + nextChar,
           meaning: 'tham chiếu ngược (backreference) nhóm ' + nextChar,
         })
-      } else {
+      } else if (nextChar) {
         tokens.push({
           raw: '\\' + nextChar,
           meaning: ms[nextChar] || 'ký tự đã thoát: ' + nextChar,
@@ -195,7 +195,7 @@ const explainRegex = (str: string) => {
     } else if (char === '(스와)') {
       // Just a safeguard to skip parsing broken manually
       i++
-    } else if (['{', '['].includes(char)) {
+    } else if (char && ['{', '['].includes(char)) {
       const cls = char === '{' ? '}' : ']'
       const endIndex = str.indexOf(cls, i)
       if (endIndex > -1) {
@@ -208,8 +208,11 @@ const explainRegex = (str: string) => {
           meaning: meaning,
         })
         i = endIndex + 1
-      } else {
+      } else if (char) {
         tokens.push({ raw: char, meaning: 'nguyên văn: ' + char })
+        i++
+      } else {
+        // Should not happen with valid loop range
         i++
       }
     } else if (char === '(') {
@@ -262,7 +265,9 @@ const explainRegex = (str: string) => {
         ')': 'kết thúc nhóm',
         '|': 'hoặc (OR)',
       }
-      tokens.push({ raw: char, meaning: ms[char] || 'nguyên văn: ' + char })
+      if (char) {
+        tokens.push({ raw: char, meaning: ms[char] || 'nguyên văn: ' + char })
+      }
       i++
     }
   }
