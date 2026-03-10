@@ -77,7 +77,8 @@ function dismiss() {
 <template>
   <div
     v-if="!isDismissed"
-    class="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex items-center"
+    class="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex items-center transition-opacity duration-300"
+    :class="isOpen ? 'opacity-100' : 'opacity-50 hover:opacity-100'"
     @mouseenter="show"
     @mouseleave="scheduleHide"
   >
