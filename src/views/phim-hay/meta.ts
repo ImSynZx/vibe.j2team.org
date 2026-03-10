@@ -6,7 +6,7 @@ const meta: PageMeta = {
     'Xem phim online miễn phí với kho phim khổng lồ: phim lẻ, phim bộ, anime, hoạt hình và nhiều thể loại khác. Cập nhật phim mới mỗi ngày, tốc độ cao, không quảng cáo.',
   author: 'SynZx',
   facebook: 'https://www.facebook.com/imsynzx',
-  category: 'entertainment',
+  category: 'other',
 }
 
 export default meta
