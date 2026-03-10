@@ -157,7 +157,7 @@ const thumbUrl = computed(() => {
     <div v-if="selectedEpisode" class="space-y-6">
       <!-- Video Player (Iframe) -->
       <div
-        class="aspect-video w-full overflow-hidden border border-border-default bg-black shadow-lg"
+        class="aspect-video w-full overflow-hidden border border-border-default bg-black shadow-lg sm:rounded-xl"
       >
         <iframe
           v-if="selectedEpisode.link_embed"
@@ -172,7 +172,7 @@ const thumbUrl = computed(() => {
     <!-- Episode list -->
     <div
       v-if="movieData.episodes && movieData.episodes.length > 0"
-      class="space-y-6 border border-border-default bg-bg-surface p-6"
+      class="space-y-6 border border-border-default bg-bg-surface p-4 sm:p-6 rounded-xl"
     >
       <h3 class="flex items-center gap-3 font-display text-xl font-semibold text-text-primary mb-4">
         <span class="font-display text-sm tracking-widest text-accent-coral">//</span>
@@ -202,7 +202,9 @@ const thumbUrl = computed(() => {
     </div>
 
     <!-- Movie Info Hero -->
-    <div class="relative overflow-hidden border border-border-default bg-bg-surface p-6 md:p-8">
+    <div
+      class="relative overflow-hidden border border-border-default bg-bg-surface p-4 sm:p-6 md:p-8 rounded-xl"
+    >
       <!-- Background blur -->
       <div
         class="absolute inset-0 z-0 bg-cover bg-center opacity-10 blur-xl"
@@ -212,7 +214,7 @@ const thumbUrl = computed(() => {
 
       <div class="relative z-10 flex flex-col gap-6 md:flex-row md:items-start lg:gap-10">
         <!-- Thumbnail -->
-        <div class="w-full shrink-0 sm:w-64 md:w-56 lg:w-72">
+        <div class="w-32 mx-auto shrink-0 sm:w-64 md:w-56 lg:w-72">
           <img
             :src="thumbUrl"
             :alt="movieData.movie.name"
@@ -224,10 +226,12 @@ const thumbUrl = computed(() => {
         <div class="flex-1 space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <h1 class="font-display text-3xl font-bold text-text-primary md:text-4xl lg:text-2xl">
+              <h1
+                class="font-display text-2xl sm:text-3xl font-bold text-text-primary md:text-4xl lg:text-2xl"
+              >
                 {{ movieData.movie.name }}
               </h1>
-              <p class="font-display text-lg text-text-secondary mt-1">
+              <p class="font-display text-base sm:text-lg text-text-secondary mt-1">
                 {{ movieData.movie.origin_name }} ({{ movieData.movie.year }})
               </p>
             </div>

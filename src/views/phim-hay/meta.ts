@@ -7,6 +7,7 @@ const meta: PageMeta = {
   author: 'SynZx',
   facebook: 'https://www.facebook.com/imsynzx',
   category: 'other',
+  showToolbar: false,
 }
 
 export default meta

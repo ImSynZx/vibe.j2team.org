@@ -105,7 +105,8 @@ const tabs = [
   { id: 'phim-bo', name: 'Phim Bộ', icon: 'ph:monitor-play' },
   { id: 'hoat-hinh', name: 'Hoạt Hình', icon: 'ph:ghost' },
   { id: 'genres', name: 'Thể Loại', icon: 'ph:squares-four' },
-  { id: 'history', name: 'Lịch sử xem', icon: 'ph:bookmark-simple' },
+  { id: 'history', name: 'Lịch sử xem', icon: 'ph:clock' },
+  { id: 'bookmarks', name: 'Phim đã lưu', icon: 'ph:bookmark-simple' },
 ]
 
 // Fetching logic
@@ -168,7 +169,11 @@ const fetchMovies = async (page = 1) => {
 
 watch(activeTab, () => {
   selectedMovie.value = null
-  if (activeTab.value !== 'history' && activeTab.value !== 'search') {
+  if (
+    activeTab.value !== 'history' &&
+    activeTab.value !== 'search' &&
+    activeTab.value !== 'bookmarks'
+  ) {
     fetchMovies(1)
   }
 })
@@ -217,13 +222,17 @@ onMounted(() => {
 
     <!-- Header -->
     <header
-      class="sticky top-0 z-50 border-b border-white/5 bg-bg-deep/70 backdrop-blur-xl shadow-lg"
+      v-show="!selectedMovie"
+      class="sticky top-0 z-50 border-b border-white/5 bg-bg-deep/70 backdrop-blur-xl shadow-lg transition-all"
     >
-      <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-3 sm:px-6 pl-14 md:pl-6 lg:pl-4">
+      <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-3 sm:px-6">
         <!-- Row 1: Logo & Search -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
           <!-- Click logo resets app state -->
-          <button @click="goHome" class="flex items-center gap-2 group md:ml-12 lg:ml-16">
+          <button
+            @click="goHome"
+            class="flex items-center gap-2 group md:ml-12 lg:ml-16 pl-10 sm:pl-0"
+          >
             <div
               class="rounded-lg bg-accent-coral/10 p-1.5 transition-colors group-hover:bg-accent-coral/20"
             >
@@ -254,12 +263,12 @@ onMounted(() => {
 
         <!-- Row 2: Navigation Tabs -->
         <nav
-          class="flex w-full items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-1 scrollbar-hide"
+          class="flex w-full items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-hide px-1 flex-nowrap"
         >
           <button
             v-for="tab in tabs"
             :key="tab.id"
-            class="group flex whitespace-nowrap items-center gap-2 rounded-full px-4 py-2 font-display text-sm font-semibold transition-all relative overflow-hidden"
+            class="group flex shrink-0 items-center gap-2 rounded-full px-4 py-2 font-display text-sm font-semibold transition-all relative overflow-hidden"
             :class="[
               activeTab === tab.id
                 ? 'bg-accent-coral text-bg-deep shadow-lg shadow-accent-coral/20'
@@ -313,7 +322,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <main class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    <main class="mx-auto max-w-7xl px-2 sm:px-4 py-6 sm:py-8 md:px-6">
       <MovieDetail
         v-if="selectedMovie"
         :slug="selectedMovie"
@@ -348,9 +357,8 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- History/Bookmarks Tab -->
-        <div v-else-if="activeTab === 'history'" class="space-y-12">
-          <!-- Bookmarks -->
+        <!-- Bookmarks Tab -->
+        <div v-else-if="activeTab === 'bookmarks'" class="space-y-12 flex-1">
           <section>
             <h2
               class="mb-6 flex items-center gap-3 font-display text-2xl font-semibold text-text-primary"
@@ -364,9 +372,16 @@ onMounted(() => {
             </h2>
             <div
               v-if="bookmarks.length === 0"
-              class="rounded-xl border border-dashed border-border-default p-8 text-center text-text-secondary"
+              class="rounded-xl border border-dashed border-border-default p-12 flex flex-col items-center gap-3 text-center text-text-secondary"
             >
-              Bạn chưa theo dõi phim nào.
+              <Icon icon="ph:bookmark-simple-dashed" class="h-10 w-10 opacity-50" />
+              <p>Bạn chưa theo dõi phim nào.</p>
+              <button
+                @click="goHome"
+                class="mt-2 text-accent-coral font-medium text-sm hover:underline"
+              >
+                Khám phá phim ngay
+              </button>
             </div>
             <div
               v-else
@@ -400,7 +415,7 @@ onMounted(() => {
                 </div>
               </button>
             </div>
-            <div v-if="bookmarkTotalPages > 1" class="mt-6 flex justify-center">
+            <div v-if="bookmarkTotalPages > 1" class="mt-8 flex justify-center">
               <AppPagination
                 :current-page="bookmarkPage"
                 :total-pages="bookmarkTotalPages"
@@ -408,7 +423,10 @@ onMounted(() => {
               />
             </div>
           </section>
+        </div>
 
+        <!-- History Tab -->
+        <div v-else-if="activeTab === 'history'" class="space-y-12 flex-1">
           <!-- Timeline History -->
           <section>
             <h2
@@ -423,60 +441,65 @@ onMounted(() => {
             </h2>
             <div
               v-if="watchHistory.length === 0"
-              class="rounded-xl border border-dashed border-border-default p-8 text-center text-text-secondary"
+              class="rounded-xl border border-dashed border-border-default p-12 flex flex-col items-center gap-3 text-center text-text-secondary"
             >
-              Lịch sử xem phim trống.
+              <Icon icon="ph:clock-dashed" class="h-10 w-10 opacity-50" />
+              <p>Lịch sử xem phim trống.</p>
+              <button
+                @click="goHome"
+                class="mt-2 text-accent-coral font-medium text-sm hover:underline"
+              >
+                Hãy xem thử một bộ phim
+              </button>
             </div>
-            <div v-else class="space-y-4">
+            <div v-else class="space-y-3">
               <button
                 v-for="movie in paginatedHistory"
                 :key="movie.slug"
-                class="group flex w-full items-center gap-4 rounded-xl border border-border-default bg-bg-surface p-3 transition-all hover:border-accent-sky hover:bg-bg-elevated text-left"
+                class="group flex w-full flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border-default bg-bg-surface p-3 transition-all hover:border-accent-sky hover:bg-bg-elevated text-left shadow-sm"
                 @click="handleMovieClick(movie)"
               >
-                <img
-                  :src="movie.thumb_url"
-                  :alt="movie.name"
-                  class="h-20 w-16 rounded object-cover shadow-sm transition-transform group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div class="flex-1">
-                  <h3
-                    class="font-display font-bold text-base text-text-primary transition-colors group-hover:text-accent-sky mb-1 line-clamp-1"
-                  >
-                    {{ movie.name }}
-                  </h3>
-                  <div class="flex flex-wrap items-center gap-2 text-xs text-text-dim mb-1">
-                    <span v-if="movie.quality" class="font-bold text-accent-amber">{{
-                      movie.quality
-                    }}</span>
-                    <span v-if="movie.year">{{ movie.year }}</span>
-                    <span v-if="movie.time" class="flex items-center gap-1"
-                      ><Icon icon="ph:clock" class="h-3 w-3" /> {{ movie.time }}</span
+                <div class="flex gap-4 items-center flex-1">
+                  <img
+                    :src="movie.thumb_url"
+                    :alt="movie.name"
+                    class="h-20 w-14 sm:h-24 sm:w-16 rounded object-cover shadow-sm transition-transform group-hover:scale-105 shrink-0"
+                    loading="lazy"
+                  />
+                  <div class="flex-1 min-w-0">
+                    <h3
+                      class="font-display font-bold text-base text-text-primary transition-colors group-hover:text-accent-sky mb-1 line-clamp-2 sm:line-clamp-1"
                     >
-                    <span
-                      v-if="movie.categories && movie.categories.length"
-                      class="text-text-dim/80"
-                      >· {{ movie.categories.join(', ') }}</span
+                      {{ movie.name }}
+                    </h3>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-text-dim mb-2">
+                      <span v-if="movie.quality" class="font-bold text-accent-amber">{{
+                        movie.quality
+                      }}</span>
+                      <span v-if="movie.year">{{ movie.year }}</span>
+                      <span v-if="movie.time" class="flex items-center gap-1"
+                        ><Icon icon="ph:clock" class="h-3 w-3" /> {{ movie.time }}</span
+                      >
+                    </div>
+                    <p
+                      v-if="movie.episode_name"
+                      class="text-sm text-accent-coral font-medium flex items-center gap-1.5 overflow-hidden"
                     >
+                      <Icon icon="ph:play-circle-fill" class="h-4 w-4 shrink-0" />
+                      <span class="truncate">Đang xem: {{ movie.episode_name }}</span>
+                    </p>
                   </div>
-                  <p
-                    v-if="movie.episode_name"
-                    class="text-sm text-accent-coral font-medium flex items-center gap-1"
-                  >
-                    <Icon icon="ph:play-circle-fill" class="h-4 w-4" /> Đang xem:
-                    {{ movie.episode_name }}
-                  </p>
                 </div>
+
                 <div
-                  class="hidden text-xs font-medium text-text-dim sm:flex items-center gap-1 self-start"
+                  class="text-xs font-medium text-text-secondary flex items-center gap-1.5 sm:self-start bg-bg-deep px-3 py-1.5 rounded-lg border border-border-default shrink-0 ml-16 sm:ml-0"
                 >
-                  <Icon icon="ph:calendar-blank" class="h-3 w-3" />
+                  <Icon icon="ph:calendar-blank" class="h-4 w-4 text-accent-sky" />
                   {{ formatTimeAgo(movie.last_watched) }}
                 </div>
               </button>
             </div>
-            <div v-if="historyTotalPages > 1" class="mt-6 flex justify-center">
+            <div v-if="historyTotalPages > 1" class="mt-8 flex justify-center">
               <AppPagination
                 :current-page="historyPage"
                 :total-pages="historyTotalPages"
