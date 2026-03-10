@@ -222,7 +222,6 @@ onMounted(() => {
 
     <!-- Header -->
     <header
-      v-show="!selectedMovie"
       class="sticky top-0 z-50 border-b border-white/5 bg-bg-deep/70 backdrop-blur-xl shadow-lg transition-all"
     >
       <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-3 sm:px-6">
